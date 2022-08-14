@@ -1421,7 +1421,7 @@ pragma solidity >=0.8.0 <0.9.0;
 contract Affirmations is ERC721A, Ownable, ReentrancyGuard {
   using Strings for uint256;
 
-    uint256 public price = .01 ether;
+    uint256 public price = .001 ether;
     mapping(address => uint256) minted;
 
   string[] public sentiments = [
@@ -1429,23 +1429,26 @@ contract Affirmations is ERC721A, Ownable, ReentrancyGuard {
           "GN Cutie!",
           "Bullish!",
           "Bullish on you!",
+          "To the moon!",
+          "You're so cool!",
           "I love you!",
+          "You're special!",
           "I will never leave you!",
           "You're GMI!",
           "GMI!", "WAGMI!"];
 
   mapping(uint256 => uint256) pings;
     
-  constructor() ERC721A("On Chain Game", "GAME!", 2, 999) {}
+  constructor() ERC721A("Positive Affirmations", "GM!", 2, 10000) {}
 
   // public
   function mint(uint256 _count) public payable {
     uint256 supply = totalSupply();
-    require(supply + _count <= 999);
+    require(supply + _count < 10000);
 
     if (msg.sender != owner()) {
       require(minted[msg.sender] + _count < 3, "2 max");
-      require(msg.value >= (0.01 ether) * _count);
+      require(msg.value >= (0.001 ether) * _count);
     }
     
     _safeMint(msg.sender, _count);
@@ -1453,7 +1456,7 @@ contract Affirmations is ERC721A, Ownable, ReentrancyGuard {
   }
 
   function buy() public payable nonReentrant {
-      require(msg.value >= price, "not paying enuf ");
+      require(msg.value >= price, "not paying enuf");
       uint256 id = uint256(keccak256(abi.encodePacked(msg.sender, block.difficulty))) % 10000;
 
       (bool success, ) = ownerOf(id).call{value: (msg.value * 9 / 10)}('');
@@ -1515,5 +1518,5 @@ contract Affirmations is ERC721A, Ownable, ReentrancyGuard {
         if (operator == address(this)) return true;
         super.isApprovedForAll(owner, operator);
     }
-    
+
 }
