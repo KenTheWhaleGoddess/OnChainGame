@@ -1426,7 +1426,7 @@ contract Affirmations is ERC721A, Ownable, ReentrancyGuard {
 
   string[] public sentiments = [
           "GM!",
-          "GN Cutie!",
+          "GN!",
           "Bullish!",
           "Bullish on you!",
           "To the moon!",
@@ -1436,8 +1436,6 @@ contract Affirmations is ERC721A, Ownable, ReentrancyGuard {
           "I will never leave you!",
           "You're GMI!",
           "GMI!", "WAGMI!"];
-
-  mapping(uint256 => uint256) pings;
     
   constructor() ERC721A("Positive Affirmations", "GM!", 2, 10000) {}
 
@@ -1457,7 +1455,7 @@ contract Affirmations is ERC721A, Ownable, ReentrancyGuard {
 
   function buy() public payable nonReentrant {
       require(msg.value >= price, "not paying enuf");
-      uint256 id = uint256(keccak256(abi.encodePacked(msg.sender, block.difficulty))) % 10000;
+      uint256 id = uint256(keccak256(abi.encodePacked(msg.sender, block.difficulty))) % totalSupply();
 
       (bool success, ) = ownerOf(id).call{value: (msg.value * 9 / 10)}('');
       require(success, "send failed");
@@ -1468,9 +1466,9 @@ contract Affirmations is ERC721A, Ownable, ReentrancyGuard {
   
   function buildImage(uint256 _tokenId) public view returns(string memory) {
       TokenOwnership memory tokenMinter = super.minterOf(_tokenId);
-      string memory bgHue = ((uint256(keccak256(abi.encodePacked(tokenMinter.addr, tokenMinter.startTimestamp, pings[_tokenId], "bgHue", _tokenId)))) % 361).toString();
-      string memory fgHue = ((uint256(keccak256(abi.encodePacked(tokenMinter.addr, tokenMinter.startTimestamp, pings[_tokenId], "fgHue", _tokenId)))) % 361).toString();
-      uint256 sentimentIdx = ((uint256(keccak256(abi.encodePacked(tokenMinter.addr, tokenMinter.startTimestamp, pings[_tokenId], "sentiment", _tokenId)))) % sentiments.length);
+      string memory bgHue = ((uint256(keccak256(abi.encodePacked(tokenMinter.addr, tokenMinter.startTimestamp, "bgHue", _tokenId)))) % 361).toString();
+      string memory fgHue = ((uint256(keccak256(abi.encodePacked(tokenMinter.addr, tokenMinter.startTimestamp, "fgHue", _tokenId)))) % 361).toString();
+      uint256 sentimentIdx = ((uint256(keccak256(abi.encodePacked(tokenMinter.addr, tokenMinter.startTimestamp, "sentiment", _tokenId)))) % sentiments.length);
       string memory text = sentiments[sentimentIdx];
       return Base64.encode(bytes(
           abi.encodePacked(
