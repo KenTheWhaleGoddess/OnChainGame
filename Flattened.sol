@@ -1418,37 +1418,21 @@ abstract contract ReentrancyGuard {
 
 pragma solidity >=0.8.0 <0.9.0;
 
-contract OnChainGame is ERC721A, Ownable, ReentrancyGuard {
+contract Affirmations is ERC721A, Ownable, ReentrancyGuard {
   using Strings for uint256;
 
     uint256 public price = .01 ether;
     mapping(address => uint256) minted;
 
-  string[] public positive_sentminet = [
-          "It is certain.",
-          "It is decidedly so.",
-          "Without a doubt.",
-          "Yes definitely.",
-          "You may rely on it.",
-
-          "As I see it, yes.",
-          "Most likely.",
-          "Outlook good.",
-          "Yes.", "GMI", "WAGMI",
-          "Signs point to yes."];
-
-  string[] public negative_sentiment = ["Don't count on it.",
-          "My reply is no.",
-          "My sources say no.",
-          "Outlook not so good.", 
-          "Very doubtful.", "NGMI"];
-  string[] public neutral_sentiment = ["Reply hazy, try again.",
-          "Ask again later.",
-          "Better not tell you now.",
-          "Cannot predict now.",
-          "Concentrate and ask again"];
-
-  uint256 sentiments = (positive_sentminet.length + negative_sentiment.length + neutral_sentiment.length);
+  string[] public sentiments = [
+          "GM!",
+          "GN Cutie!",
+          "Bullish!",
+          "Bullish on you!",
+          "I love you!",
+          "I will never leave you!",
+          "You're GMI!",
+          "GMI!", "WAGMI!"];
 
   mapping(uint256 => uint256) pings;
     
@@ -1483,15 +1467,8 @@ contract OnChainGame is ERC721A, Ownable, ReentrancyGuard {
       TokenOwnership memory tokenMinter = super.minterOf(_tokenId);
       string memory bgHue = ((uint256(keccak256(abi.encodePacked(tokenMinter.addr, tokenMinter.startTimestamp, pings[_tokenId], "bgHue", _tokenId)))) % 361).toString();
       string memory fgHue = ((uint256(keccak256(abi.encodePacked(tokenMinter.addr, tokenMinter.startTimestamp, pings[_tokenId], "fgHue", _tokenId)))) % 361).toString();
-      uint256 sentimentIdx = ((uint256(keccak256(abi.encodePacked(tokenMinter.addr, tokenMinter.startTimestamp, pings[_tokenId], "sentiment", _tokenId)))) % sentiments);
-      string memory text;
-      if (sentimentIdx < positive_sentminet.length) {
-        text = positive_sentminet[sentimentIdx];
-      } else if ((sentimentIdx - positive_sentminet.length) < negative_sentiment.length) {
-        text = negative_sentiment[(sentimentIdx - positive_sentminet.length) ];
-      } else {
-        text = neutral_sentiment[sentimentIdx - positive_sentminet.length - negative_sentiment.length];
-      }
+      uint256 sentimentIdx = ((uint256(keccak256(abi.encodePacked(tokenMinter.addr, tokenMinter.startTimestamp, pings[_tokenId], "sentiment", _tokenId)))) % sentiments.length);
+      string memory text = sentiments[sentimentIdx];
       return Base64.encode(bytes(
           abi.encodePacked(
               '<svg width="500" height="500" xmlns="http://www.w3.org/2000/svg">',
@@ -1538,20 +1515,5 @@ contract OnChainGame is ERC721A, Ownable, ReentrancyGuard {
         if (operator == address(this)) return true;
         super.isApprovedForAll(owner, operator);
     }
-    /**
-        Brick these fns 
-     */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public pure override {
-        revert();
-    }
-
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public pure override { revert(); } 
+    
 }
